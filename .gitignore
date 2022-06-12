@@ -1,0 +1,4 @@
+__pycache__/*
+trained_data/*
+trained_model/*
+tokenized_data/*
