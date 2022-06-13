@@ -51,8 +51,8 @@ if __name__ == "__main__":
     data_name = "simplebooks-2"
 
     # allocate path
-    text_path = [f"trained_data/{data_name}/train.txt"]
-    save_path = f"tokenized_data/{data_name}/"
+    text_path = [f"../trained_data/{data_name}/train.txt"]
+    save_path = f"../tokenized_data/{data_name}/"
     
     # Init & train tokenizer
     tokenizer = tokenization()

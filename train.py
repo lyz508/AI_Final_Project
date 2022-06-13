@@ -1,10 +1,8 @@
 import os
 import tensorflow as tf
-from transformers import GPT2Config, TFGPT2LMHeadModel, GPT2Tokenizer, TextGenerationPipeline
-from src.tokenization import tokenization
+from transformers import GPT2Config, GPT2Tokenizer, TextGenerationPipeline
 from src.config import ProjectConfig
 from src.model import TextModel
-import matplotlib.pyplot as plt
 
 """ Metadata
 1. config
@@ -46,7 +44,7 @@ def load_tokenizer() -> GPT2Tokenizer:
     return BPE_tokenizer
 
 
-def make_dataset(BPE_tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
+def make_dataset(tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
     """ Make Dataset
     1. Encode the text by tokenizer.
     2. Slice tokenized data to blocks
@@ -66,12 +64,13 @@ def make_dataset(BPE_tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
     with open(config.train_pos, "r", encoding='utf-8') as f:
         tmp = f.read()
         tmp = tmp.replace("\n", " ")    # clean up the change line characters
-    single_string = tmp + BPE_tokenizer.eos_token
-    data_tokenized = BPE_tokenizer.encode(tmp)
+    # Add token, this can be done when having multiple input files or text
+    # add_special_tokoen = tokenizer.bos_token + tmp + tokenizer.eos_token
+    data_tokenized = tokenizer.encode(tmp)
     print("\tText Encoded...")
-
-    examples, inputs, labels = [], [], []
+    
     # Slice data with equal quantity
+    examples, inputs, labels = [], [], []
     for i in range(0, len(data_tokenized) - config.block_size + 1, config.block_size):
         examples.append(data_tokenized[i:i + config.block_size])
     for ex in examples:
@@ -84,36 +83,36 @@ def make_dataset(BPE_tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
         .batch(config.batch_size, drop_remainder=True)
     return dataset
 
-def main2():
+def main():
     ## Load tokenizer   ##
-    print("Loading tokenizer:")
+    print("==> Loading tokenizer:")
     BPE_tokenizer = load_tokenizer()
     print("\tTokenizer loaded...")
 
     ## Make dataset     ##
-    print("Making dataset:")
+    print("==> Making dataset:")
     dataset = make_dataset(BPE_tokenizer=BPE_tokenizer)
     print("\tDataset made...")
 
     ## Init Model       ##
-    print("Init Model:")
+    print("==> Init Model:")
     model = TextModel(config=config, tokenizer=BPE_tokenizer)
     print("\tModel initialized...")
 
     ## Train Model      ##
-    print("Trainning Model:")
+    print("==> Trainning Model:")
     model.train(dataset=dataset)
     print("\tModel trained...")
 
     ## Visualized       ##
-    print("Visualizing:")
+    print("==> Visualizing:")
     model.visualize()
     print("\tModel visualized...")
 
     ## Trainning Result ##
-    print("Trainning Result:")
+    print("==> Train Result:")
     model.trainning_output()
-    print("\tTrainning result output....")
+    print("\tTrain result output....")
 
     """ Text Generating
     Make prediction by using text generating function
@@ -135,4 +134,4 @@ def main2():
 
 
 if __name__ == "__main__":
-    main2()
+    main()

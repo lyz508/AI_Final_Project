@@ -60,8 +60,10 @@ class TextModel():
         config = self.config
         # Callback functions
         class SaveModelCallback (tf.keras.callbacks.Callback):
+            interval = 5
             def on_epoch_end(self, epoch, logs=None):
-                self.model.save_pretrained(f"{config.model_pos}-{epoch+1}")
+                if epoch % 5 == 0 or epoch == 1:
+                    self.model.save_pretrained(f"{config.model_pos}-{epoch+1}")
         class SaveBatchLossCallback(tf.keras.callbacks.Callback):
             def on_train_batch_end(self, batch, logs=None):
                 batch_end_loss.append(logs['loss'])
@@ -120,15 +122,21 @@ class TextModel():
         - This is a test function
         - Output the result, metadata of the model trainning
         """
+        # Local variable
+        per_epoch_loss = self.history.history['loss']
         # GPT model config
-        print (f"## GPT Mode Config     ##")
+        print(f"## GPT Mode Config     ##")
         print(f"{self.model.config}")
         # Per Epoch and loss
-        print (f"## Loss (Per Epoch)    ##")
-        for idx, loss in enumerate(self.history.history['loss']):
+        print(f"## Loss (Per Epoch)    ##")
+        for idx, loss in enumerate(per_epoch_loss):
             print(f"\tEpoch {idx} -> Loss: {loss}")
         # Batch loss for every 1000 batch number
-        print (f"## Loss (Per Batch)    ##")
+        print(f"## Loss (Per Batch)    ##")
         for idx, loss in enumerate(self.batch_end_loss):
             if idx % 1000 == 0:
                 print(f"\tBatch {idx} -> Loss: {loss}")
+        # Loss Information
+        print(f"## Loss Information    ##")
+        print(f"Avg. loss: {sum(per_epoch_loss) / len(per_epoch_loss)} \n\t\
+        Max Loss: {max(per_epoch_loss)} \n\tMin Loss: {min(per_epoch_loss)}")
