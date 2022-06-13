@@ -32,7 +32,7 @@
 
 - Structure of the program
 
-<img src="media/sample-code-structure-before" alt="image-20220613190118332"  />
+<img src="media/sample-code-structure-before.jpg" alt="image-20220613190118332"  />
 
 - files
 
@@ -72,7 +72,7 @@
 
 - An example structure with the provided pretrained model and put the data will be like.
 
-  <img src="media/sample-code-structure-release" alt="sample" style="zoom:80%;" />
+  <img src="media/sample-code-structure-release.png" alt="sample" style="zoom:80%;" />
 
   
 
@@ -126,6 +126,8 @@
 - Use `matplotlib.pyplot` to visualized data
 
 ## Result
+
+- This visualization result will be stored in `trained_model/figure/`
 
 ### Loss Value Per Epoch
 

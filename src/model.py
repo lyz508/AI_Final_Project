@@ -61,7 +61,7 @@ class TextModel():
         class SaveModelCallback (tf.keras.callbacks.Callback):
             interval = 5
             def on_epoch_end(self, epoch, logs=None):
-                if epoch % 5 == 0 or epoch == 1:
+                if (epoch+1) % 5 == 0 or epoch == 0:
                     self.model.save_pretrained(f"{config.model_pos}-{epoch+1}")
         class SaveBatchLossCallback(tf.keras.callbacks.Callback):
             def on_train_batch_end(self, batch, logs=None):
@@ -105,7 +105,9 @@ class TextModel():
         plt.title('Loss (Per epoch)')
         plt.xlabel('epoch')
         plt.ylabel('loss')
+        plt.savefig(f"{self.config.pltfigure_pos}/{self.config.data_name}-{self.config.epoch_times}-epoch.png")
         plt.show()
+        plt.close()
 
         # Per batch
         plt.figure(figsize=(10, 5))
@@ -114,7 +116,11 @@ class TextModel():
         plt.title('Loss (Per batch)')
         plt.xlabel('batch')
         plt.ylabel('loss')
+        plt.savefig(f"{self.config.pltfigure_pos}/{self.config.data_name}-{self.config.epoch_times}-batch.png")
         plt.show()
+        plt.close()
+
+
 
     def trainning_output(self):
         """ output
@@ -137,5 +143,4 @@ class TextModel():
                 print(f"\tBatch {idx} -> Loss: {loss}")
         # Loss Information
         print(f"## Loss Information    ##")
-        print(f"Avg. loss: {sum(per_epoch_loss) / len(per_epoch_loss)} \n\t\
-        Max Loss: {max(per_epoch_loss)} \n\tMin Loss: {min(per_epoch_loss)}")
+        print(f"Avg. loss: {sum(per_epoch_loss) / len(per_epoch_loss)} \nMax Loss: {max(per_epoch_loss)} \nMin Loss: {min(per_epoch_loss)}")

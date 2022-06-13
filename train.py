@@ -19,7 +19,7 @@ config = ProjectConfig(
     batch_size=12,
     buffer_size=1000,
     data_name="simplebooks-2",
-    epoch_times=50
+    epoch_times=1
 )
 gpt_config : GPT2Config
 # Set seed for static behavior

@@ -10,6 +10,7 @@ class ProjectConfig:
         self.train_pos = f"trained_data/{data_name}/train.txt"
         self.model_pos = f"trained_model/models/{data_name}"
         self.tfboard_pos = f"trained_model/logs/{data_name}"
+        self.pltfigure_pos= f"trained_model/figure/{data_name}"
         self.epoch_times = epoch_times
         # Rest
         for k, v in kwargs.items():
@@ -25,3 +26,5 @@ class ProjectConfig:
             os.makedirs(self.model_pos)
         if not os.path.exists(self.tfboard_pos):
             os.makedirs(self.tfboard_pos)
+        if not os.path.exists(self.pltfigure_pos):
+            os.makedirs(self.pltfigure_pos)
