@@ -1,8 +1,10 @@
 import os
 import tensorflow as tf
 from transformers import GPT2Config, TFGPT2LMHeadModel, GPT2Tokenizer, TextGenerationPipeline
-from tokenization import tokenization
-from config import ProjectConfig
+from src.tokenization import tokenization
+from src.config import ProjectConfig
+from src.model import TextModel
+import matplotlib.pyplot as plt
 
 """ Metadata
 1. config
@@ -19,7 +21,7 @@ config = ProjectConfig(
     batch_size=12,
     buffer_size=1000,
     data_name="simplebooks-2",
-    epoch_times=10
+    epoch_times=50
 )
 gpt_config : GPT2Config
 # Set seed for static behavior
@@ -82,78 +84,7 @@ def make_dataset(BPE_tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
         .batch(config.batch_size, drop_remainder=True)
     return dataset
 
-
-def init_model(tokenizer: tokenization):
-    """ Train
-    1. Initialize the model
-    2. Define
-        - optimizer
-            Choose adam optimizer.
-            Control the clipnorm parameters to clip the gradient.
-        - loss -> Using SparseCategoricalCrossentropy
-            Since there will be only one attr in the dataset,
-            use sparse categorial crossentropy.
-            Set from_logits to True may improve numerical stablility.
-        - metric
-    3. Compile into the model
-    """
-    # initial the Model
-    gpt_config = GPT2Config(
-        architectures=["TFGPT2LMHeadModel"],
-        model_type="TFGPT2LMHeadModel",
-        vocab_size=tokenizer.vocab_size,
-        bos_token_id=tokenizer.bos_token_id,
-        eos_token_id=tokenizer.eos_token_id
-    )
-    model = TFGPT2LMHeadModel(config=gpt_config)
-
-    # Define
-    optimizer = tf.keras.optimizers.Adam(learning_rate=1e-05, epsilon=1e-08, clipnorm=1.0)
-    loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-    metric = tf.keras.metrics.SparseCategoricalAccuracy('accuracy')
-
-    # compiling the model
-    model.compile(
-        optimizer=optimizer, 
-        loss=[loss, *[None] * model.config.n_layer], 
-        metrics=[metric]
-    )
-
-    return model
-
-
-def train(model: TFGPT2LMHeadModel, dataset: tf.data.Dataset):
-    """ Train model & Save it to the path
-    1. Set callback function to store model per epoch
-        - inherited from  tf.keras.callbacks.Callback
-        - override to save model in config.model_pos
-    2. Check directories for tfboard and saved_model existed 
-    3. Use TensorBoard to visualize the result 
-    """
-    class SaveCallback (tf.keras.callbacks.Callback):
-        def on_epoch_end(self, epoch, logs=None):
-            self.model.save_pretrained(f"{config.model_pos}-{epoch}")
-
-    # Check directory existed
-    if not os.path.exists(config.model_pos):
-        os.makedirs(config.model_pos)
-    if not os.path.exists(config.tfboard_pos):
-        os.makedirs(config.tfboard_pos)
-
-    model.fit(
-        dataset, 
-        epochs=config.epoch_times,
-        callbacks=[
-            tf.keras.callbacks.TensorBoard(
-                log_dir=f"{config.model_pos}/logs"
-            ),
-            SaveCallback(),
-        ]
-    )
-    return model
-
-
-def main():
+def main2():
     ## Load tokenizer   ##
     print("Loading tokenizer:")
     BPE_tokenizer = load_tokenizer()
@@ -166,21 +97,31 @@ def main():
 
     ## Init Model       ##
     print("Init Model:")
-    model = init_model(tokenizer=BPE_tokenizer)
+    model = TextModel(config=config, tokenizer=BPE_tokenizer)
     print("\tModel initialized...")
 
     ## Train Model      ##
     print("Trainning Model:")
-    model = train(model=model, dataset=dataset)
+    model.train(dataset=dataset)
     print("\tModel trained...")
-    
+
+    ## Visualized       ##
+    print("Visualizing:")
+    model.visualize()
+    print("\tModel visualized...")
+
+    ## Trainning Result ##
+    print("Trainning Result:")
+    model.trainning_output()
+    print("\tTrainning result output....")
 
     """ Text Generating
     Make prediction by using text generating function
+    -> This blank is for test
     """
     text = "Did you hear that ?"
     tokenizer = BPE_tokenizer
-    text_generator = TextGenerationPipeline(model, tokenizer)
+    text_generator = TextGenerationPipeline(model.model, tokenizer)
     print (f'''Result: 
         {text_generator(
             text_inputs=text,
@@ -192,5 +133,6 @@ def main():
         '''
     )
 
+
 if __name__ == "__main__":
-    main()
+    main2()

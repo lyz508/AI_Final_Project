@@ -1,4 +1,4 @@
-import tensorflow as tf
+import os
 
 class ProjectConfig:
     def __init__(self, block_size, batch_size, buffer_size, data_name, epoch_times, **kwargs):
@@ -14,3 +14,14 @@ class ProjectConfig:
         # Rest
         for k, v in kwargs.items():
             setattr(self, k, v)
+        
+        # Check whether the directories is existed
+        # Check directory existed
+        if not os.path.exists(self.token_pos):
+            os.makedirs(self.token_pos)
+        if not os.path.exists(self.train_pos):
+            os.makedirs(self.train_pos)
+        if not os.path.exists(self.model_pos):
+            os.makedirs(self.model_pos)
+        if not os.path.exists(self.tfboard_pos):
+            os.makedirs(self.tfboard_pos)
