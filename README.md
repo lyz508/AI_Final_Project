@@ -1,12 +1,100 @@
-# AI Final Project
+# Writing with AI
 
 ## Proposal
 
+- NYCU 2022 spring AI Final Project
+
 - The main proposal is to use the GPT-2 model trained & generating text
+
+## Simple Use
+
+- Download the release.
+
+- Follow the step below to construct directories.
+
+- Put files to the right position
+
+- Train model
+
+  ```shell
+  python train.py
+  ```
+
+- Write with the model
+
+	```shell
+	python write.py [--dir <model_path>] [--max_len <expected_len>]
+	```
 
 ## Code Structure
 
+### Structure of Program
 
+- Structure of the program
+
+<img src="media/sample-code-structure-before" alt="image-20220613190118332"  />
+
+- files
+
+  - `src/*`
+
+    - `config.py`: Store program configuration and will be instantiated in `train.py` or anywhere it need to be called.
+
+    - `model.py`: Including model initialize, train, save, visualize and log output. A combination of core functions.
+
+    - `tokenization.py`: Use this to trained an BPE tokenizer.
+
+      ```shell
+      python tokenization.py
+      ```
+
+      > This need to be run if there are no corresponding tokenizer.
+
+  - `train.py`
+
+    - It will load tokenizer, build model, setup all project configuration and start training the module.
+
+  - `write.py`
+
+    - It can be used to generate text with existed models, which will stored in trained_model directory.
+
+### Mkdir
+
+- Some directories may need to be constructed before the program runs
+
+  ```shell
+  mkdir trained_data
+  mkdir tokenized_data
+  mkdir trained_model
+  ```
+
+  > make sure to put data willing to train under the trained_data directory
+
+- An example structure with the provided pretrained model and put the data will be like.
+
+  <img src="media/sample-code-structure-release" alt="sample" style="zoom:80%;" />
+
+  
+
+### Modify the config
+
+- Some codes may need to be modified for local use
+
+- `train.py`
+
+  ```python
+  """ Metadata
+  ...
+  """
+  # ...
+  
+  config = ProjectConfig(
+  	...,
+  	data_name="simplebooks-2"
+  )
+  ```
+
+  > data_name can be modified
 
 ## Preprocessing
 
@@ -14,7 +102,7 @@
 
 - implement BPE tokenizer to pre-processing the text data
 
-  - [BPE tokenizer]([Summary of the tokenizers (huggingface.co)](https://huggingface.co/docs/transformers/tokenizer_summary))
+  - [Summary of the tokenizers (huggingface.co)](https://huggingface.co/docs/transformers/tokenizer_summary)
   - Aim's to translate between human-readable text and numeric indices
   - Indices will be mapped to word embeddings (numerical representations of words) -> This will be done by an embedding layer within the model. 
 
@@ -25,6 +113,17 @@
     ```python
     tokenizer = GPT2Tokenizer.from_pretrained(tokenizer_path)
     ```
+
+## Trainning
+
+### TFGPT2LMHeadModel
+
+- Use `transformers` to construct GPT Model
+
+### History
+
+- Stored history object will be used to visualize the trainning history.
+- Use `matplotlib.pyplot` to visualized data
 
 ## Result
 

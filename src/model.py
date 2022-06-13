@@ -1,7 +1,6 @@
 import os
-from tabnanny import verbose
 import tensorflow as tf
-from transformers import GPT2Config, TFGPT2LMHeadModel, GPT2Tokenizer
+from transformers import GPT2Config, TFGPT2LMHeadModel
 from src.config import ProjectConfig
 import matplotlib.pyplot as plt
 from src.tokenization import tokenization
