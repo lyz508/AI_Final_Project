@@ -13,7 +13,7 @@ from src.model import TextModel
 3. set_seed
     - For, test. Ensure the statistic of behavior.
 """
-print("Setting Metadata:")
+print("==> Setting Metadata:")
 config = ProjectConfig(
     block_size=100,
     batch_size=12,
@@ -91,7 +91,7 @@ def main():
 
     ## Make dataset     ##
     print("==> Making dataset:")
-    dataset = make_dataset(BPE_tokenizer=BPE_tokenizer)
+    dataset = make_dataset(tokenizer=BPE_tokenizer)
     print("\tDataset made...")
 
     ## Init Model       ##
