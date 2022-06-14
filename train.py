@@ -86,6 +86,35 @@ def make_dataset(tokenizer: GPT2Tokenizer, type: str) -> tf.data.Dataset:
         .batch(config.batch_size, drop_remainder=True)
     return dataset
 
+
+def combination_visualize(train_model: TextModel, test_model: TextModel):
+    """ Combinational visualization
+    - Provide combinational visualized function of test model and train model
+    """
+    # Per epoch
+    plt.figure(figsize=(10, 5))
+    plt.plot(train_model.history.history['loss'], color='red', label='train')
+    plt.plot(test_model.history.history['loss'], color='blue', label='test')
+    plt.legend(loc='upper left')
+    plt.title('Comparison of test & train (Per epoch)')
+    plt.xlabel('epoch')
+    plt.ylabel('loss')
+    plt.savefig(f"{config.pltfigure_pos}/{config.data_name}-{config.epoch_times}-train-test-epoch.png")
+    plt.show()
+    plt.close()
+    # Per batch
+    plt.figure(figsize=(10, 5))
+    plt.plot(train_model.batch_end_loss[:len(test_model.batch_end_loss)], color='red', label='train')
+    plt.plot(test_model.batch_end_loss, color='blue', label='test')
+    plt.legend(loc='upper left')
+    plt.title('Comparison of test & train (Per batch)')
+    plt.xlabel('batch')
+    plt.ylabel('loss')
+    plt.savefig(f"{config.pltfigure_pos}/{config.data_name}-{config.epoch_times}-train-test-batch.png")
+    plt.show()
+    plt.close()
+
+
 def main():
     ## Load tokenizer   ##
     print("==> Loading tokenizer:")
@@ -113,41 +142,21 @@ def main():
 
     ## Visualized       ##
     print("==> Visualizing:")
+    # Per Model Visualization
     train_model.visualize()
     test_model.visualize()
     print("\tPer Model visualized...")
-    # Combinational visualization
-    # Per epoch
-    plt.figure(figsize=(10, 5))
-    plt.plot(train_model.history.history['loss'], color='red', label='train')
-    plt.plot(test_model.history.history['loss'], color='blue', label='test')
-    plt.legend(loc='upper left')
-    plt.title('Comparison of test & train (Per epoch)')
-    plt.xlabel('batch')
-    plt.ylabel('loss')
-    plt.savefig(f"{config.pltfigure_pos}/{config.data_name}-train-test-epoch.png")
-    plt.show()
-    plt.close()
-    # Per batch
-    plt.figure(figsize=(10, 5))
-    plt.plot(train_model.batch_end_loss[:len(test_model.batch_end_loss)], color='red', label='train')
-    plt.plot(test_model.batch_end_loss, color='blue', label='test')
-    plt.legend(loc='upper left')
-    plt.title('Comparison of test & train (Per batch)')
-    plt.xlabel('batch')
-    plt.ylabel('loss')
-    plt.savefig(f"{config.pltfigure_pos}/{config.data_name}-train-test-batch.png")
-    plt.show()
-    plt.close()
+    # Combinational Visualization
+    combination_visualize(train_model=train_model, test_model=test_model)
     print("\tComparison visualized...")
     print("\tModel visualized...")
 
-
-    ## Training Result ##
-    print("==> Train Result:")
+    ## Output Training Result ##
+    print("==> Training Result:")
     train_model.trainning_output()
     test_model.trainning_output()
     print("\tTraining result output....")
+
 
     """ Text Generating
     Make prediction by using text generating function

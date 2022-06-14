@@ -104,8 +104,10 @@ class TextModel():
         """
         # Per epoch
         line_name = 'train'
+        save_name = f"{self.config.data_name}-{self.config.epoch_times}"
         if hasattr(self, 'model_name'):
             line_name = self.model_name
+            save_name = save_name + f"-{self.model_name}"
 
         plt.figure(figsize=(10, 5))
         plt.plot(self.history.history['loss'])
@@ -113,7 +115,7 @@ class TextModel():
         plt.title(f'Loss (Per epoch) -- {line_name}')
         plt.xlabel('epoch')
         plt.ylabel('loss')
-        plt.savefig(f"{self.config.pltfigure_pos}/{self.config.data_name}-{self.config.epoch_times}-epoch.png")
+        plt.savefig(f"{self.config.pltfigure_pos}/{save_name}-epoch.png")
         plt.show()
         plt.close()
 
@@ -124,7 +126,7 @@ class TextModel():
         plt.title(f'Loss (Per batch) -- {line_name}')
         plt.xlabel('batch')
         plt.ylabel('loss')
-        plt.savefig(f"{self.config.pltfigure_pos}/{self.config.data_name}-{self.config.epoch_times}-batch.png")
+        plt.savefig(f"{self.config.pltfigure_pos}/{save_name}-batch.png")
         plt.show()
         plt.close()
 
