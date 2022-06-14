@@ -2,7 +2,7 @@ import os
 from tokenizers.models import BPE
 from tokenizers import Tokenizer
 from tokenizers.decoders import ByteLevel as ByteLevelDecoder
-from tokenizers.normalizers import NFKC, Sequence, Lowercase
+from tokenizers.normalizers import NFKC, NFC, NFKD, Sequence, Lowercase
 from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.trainers import BpeTrainer
 
@@ -16,7 +16,7 @@ class tokenization(object):
         # It may seen same words in different forms as equal
         self.tokenizer.normalizer = Sequence([
             # Normalization Form Compatibility Composition
-            NFKC(),
+            NFKD(),
             Lowercase()
         ])
         self.tokenizer.pre_tokenizer = ByteLevel()
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     # allocate path
     text_path = [f"../trained_data/{data_name}/train.txt"]
-    save_path = f"../tokenized_data/{data_name}/"
+    save_path = f"../tokenized_data/{data_name}-NFKD/"
     
     # Init & train tokenizer
     tokenizer = tokenization()

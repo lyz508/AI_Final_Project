@@ -289,6 +289,8 @@
 
 ## Reference
 
+- [Text generation with GPT-2 - Model Differently](https://www.modeldifferently.com/en/2021/12/generación-de-fake-news-con-gpt-2/)
+
 - [Transformers: State-of-the-art Machine Learning for Pytorch, TensorFlow, and JAX. (github.com)](https://github.com/huggingface/transformers)
 - [TensorFlow API](https://www.tensorflow.org/api_docs/python/tf?hl=zh-tw)
 - [Model training APIs (keras.io)](https://keras.io/api/models/model_training_apis/)

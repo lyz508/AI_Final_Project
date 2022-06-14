@@ -3,10 +3,9 @@ import tensorflow as tf
 from transformers import GPT2Config, TFGPT2LMHeadModel
 from src.config import ProjectConfig
 import matplotlib.pyplot as plt
-from src.tokenization import tokenization
 
 class TextModel():
-    def __init__(self, config: ProjectConfig, tokenizer: tokenization):
+    def __init__(self, config: ProjectConfig, tokenizer):
         """ Initialize the model
         1. Initialize the model & variables
         2. Define

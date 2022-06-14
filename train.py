@@ -1,7 +1,10 @@
+from cProfile import label
 import os
+from turtle import color
 import tensorflow as tf
 from transformers import GPT2Config, GPT2Tokenizer, TextGenerationPipeline
 from src.config import ProjectConfig
+import matplotlib.pyplot as plt
 from src.model import TextModel
 
 """ Metadata
@@ -19,7 +22,7 @@ config = ProjectConfig(
     batch_size=12,
     buffer_size=1000,
     data_name="simplebooks-2",
-    epoch_times=1
+    epoch_times=30
 )
 gpt_config : GPT2Config
 # Set seed for static behavior
@@ -27,12 +30,12 @@ tf.random.set_seed(42)
 print("\tMetadata set...")
 
 
-def load_tokenizer() -> GPT2Tokenizer:
+def load_tokenizer(type: str) -> GPT2Tokenizer:
     """ Load tokenizer
     - load tokenizer from saved path
     """
     # Load tokenizer
-    BPE_tokenizer = GPT2Tokenizer.from_pretrained(config.token_pos)
+    BPE_tokenizer = GPT2Tokenizer.from_pretrained(f"{config.token_pos}-{type}")
     # Add special tokens to tokenizer
     BPE_tokenizer.add_special_tokens({
         "eos_token": "</s>",
@@ -86,51 +89,73 @@ def make_dataset(tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
 def main():
     ## Load tokenizer   ##
     print("==> Loading tokenizer:")
-    BPE_tokenizer = load_tokenizer()
+    NFKC_tokenizer = load_tokenizer("NFKC")
+    NFD_tokenizer = load_tokenizer("NFD")
+    NFKD_tokenizer = load_tokenizer("NFKD")
+    NFC_tokenizer = load_tokenizer("NFC")
     print("\tTokenizer loaded...")
 
     ## Make dataset     ##
     print("==> Making dataset:")
-    dataset = make_dataset(tokenizer=BPE_tokenizer)
+    NFKC_dataset = make_dataset(tokenizer=NFKC_tokenizer)
+    NFD_dataset = make_dataset(tokenizer=NFD_tokenizer)
+    NFKD_dataset = make_dataset(tokenizer=NFKD_tokenizer)
+    NFC_dataset = make_dataset(tokenizer=NFC_tokenizer)
     print("\tDataset made...")
 
     ## Init Model       ##
     print("==> Init Model:")
-    model = TextModel(config=config, tokenizer=BPE_tokenizer)
+    NFKC_model = TextModel(config=config, tokenizer=NFKC_tokenizer)
+    NFD_model = TextModel(config=config, tokenizer=NFD_tokenizer)
+    NFKD_model = TextModel(config=config, tokenizer=NFKD_tokenizer)
+    NFC_model = TextModel(config=config, tokenizer=NFC_tokenizer)
     print("\tModel initialized...")
 
     ## Train Model      ##
     print("==> Trainning Model:")
-    model.train(dataset=dataset)
-    print("\tModel trained...")
+    try:
+        NFKC_model.train(dataset=NFKC_dataset)
+    except KeyboardInterrupt: 
+        print("y")
+    try:
+        NFD_model.train(dataset=NFD_dataset)
+    except KeyboardInterrupt: 
+        print("y")
+    try:
+        NFKD_model.train(dataset=NFKD_dataset)
+    except KeyboardInterrupt: 
+        print("y")
+    try:
+        NFC_model.train(dataset=NFC_dataset)
+    except KeyboardInterrupt: 
+        print("y")
+
+    print("\tNFKC Model trained...")
 
     ## Visualized       ##
     print("==> Visualizing:")
-    model.visualize()
+    # Per batch
+    plt.figure(figsize=(10, 5))
+    plt.plot(NFKC_model.batch_end_loss, color='red', label='NFKC')
+    plt.plot(NFD_model.batch_end_loss, color='blue', label='NFD')
+    plt.plot(NFKD_model.batch_end_loss, color='yellow', label='NFKD')
+    plt.plot(NFC_model.batch_end_loss, color='black', label='NFC')
+    plt.legend(loc='best')
+    plt.title('Loss (Per batch)')
+    plt.xlabel('batch')
+    plt.ylabel('loss')
+    plt.savefig(f"{config.pltfigure_pos}/{config.data_name}-batch-normal.png")
+    plt.show()
+    plt.close()
     print("\tModel visualized...")
 
     ## Trainning Result ##
-    print("==> Train Result:")
-    model.trainning_output()
+    print("==> Train Result: NFKC")
+    NFKC_model.trainning_output()
+    NFD_model.trainning_output()
+    NFKD_model.trainning_output()
+    NFC_model.trainning_output()
     print("\tTrain result output....")
-
-    """ Text Generating
-    Make prediction by using text generating function
-    -> This blank is for test
-    """
-    text = "Did you hear that ?"
-    tokenizer = BPE_tokenizer
-    text_generator = TextGenerationPipeline(model.model, tokenizer)
-    print (f'''Result: 
-        {text_generator(
-            text_inputs=text,
-            max_length=128,
-            do_sample=True,
-            top_k=10,
-            eos_token_id=tokenizer.get_vocab().get("</s>", 0)
-        )[0]['generated_text']}
-        '''
-    )
 
 
 if __name__ == "__main__":
