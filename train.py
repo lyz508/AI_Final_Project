@@ -3,6 +3,7 @@ import tensorflow as tf
 from transformers import GPT2Config, GPT2Tokenizer, TextGenerationPipeline
 from src.config import ProjectConfig
 from src.model import TextModel
+import matplotlib.pyplot as plt
 
 """ Metadata
 1. config
@@ -27,12 +28,13 @@ tf.random.set_seed(42)
 print("\tMetadata set...")
 
 
-def load_tokenizer() -> GPT2Tokenizer:
+def load_tokenizer(type: str) -> GPT2Tokenizer:
     """ Load tokenizer
     - load tokenizer from saved path
     """
     # Load tokenizer
-    BPE_tokenizer = GPT2Tokenizer.from_pretrained(config.token_pos)
+    token_path = config.token_pos if type == "train" else config.test_token_pos
+    BPE_tokenizer = GPT2Tokenizer.from_pretrained(token_path)
     # Add special tokens to tokenizer
     BPE_tokenizer.add_special_tokens({
         "eos_token": "</s>",
@@ -44,7 +46,7 @@ def load_tokenizer() -> GPT2Tokenizer:
     return BPE_tokenizer
 
 
-def make_dataset(tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
+def make_dataset(tokenizer: GPT2Tokenizer, type: str) -> tf.data.Dataset:
     """ Make Dataset
     1. Encode the text by tokenizer.
     2. Slice tokenized data to blocks
@@ -61,7 +63,8 @@ def make_dataset(tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
     """
     # Use tokenizer to encode the data as single string
     data_tokenized : str
-    with open(config.train_pos, "r", encoding='utf-8') as f:
+    data_pos = config.train_pos if type == "train" else config.test_pos
+    with open(data_pos, "r", encoding='utf-8') as f:
         tmp = f.read()
         tmp = tmp.replace("\n", " ")    # clean up the change line characters
     # Add token, this can be done when having multiple input files or text
@@ -86,33 +89,65 @@ def make_dataset(tokenizer: GPT2Tokenizer) -> tf.data.Dataset:
 def main():
     ## Load tokenizer   ##
     print("==> Loading tokenizer:")
-    BPE_tokenizer = load_tokenizer()
+    BPE_tokenizer = load_tokenizer(type='train')
+    test_BPE_tokenizer = load_tokenizer(type='test')
     print("\tTokenizer loaded...")
 
     ## Make dataset     ##
     print("==> Making dataset:")
-    dataset = make_dataset(tokenizer=BPE_tokenizer)
+    train_dataset = make_dataset(tokenizer=BPE_tokenizer, type="train")
+    test_dataset = make_dataset(tokenizer=test_BPE_tokenizer, type="test")
     print("\tDataset made...")
 
     ## Init Model       ##
     print("==> Init Model:")
-    model = TextModel(config=config, tokenizer=BPE_tokenizer)
+    train_model = TextModel(config=config, tokenizer=BPE_tokenizer, model_name="train")
+    test_model = TextModel(config=config, tokenizer=test_BPE_tokenizer, model_name="test")
     print("\tModel initialized...")
 
     ## Train Model      ##
     print("==> Trainning Model:")
-    model.train(dataset=dataset)
+    train_model.train(dataset=train_dataset)
+    test_model.train(dataset=test_dataset)
     print("\tModel trained...")
 
     ## Visualized       ##
     print("==> Visualizing:")
-    model.visualize()
+    train_model.visualize()
+    test_model.visualize()
+    print("\tPer Model visualized...")
+    # Combinational visualization
+    # Per epoch
+    plt.figure(figsize=(10, 5))
+    plt.plot(train_model.history.history['loss'], color='red', label='train')
+    plt.plot(test_model.history.history['loss'], color='blue', label='test')
+    plt.legend(loc='upper left')
+    plt.title('Comparison of test & train (Per epoch)')
+    plt.xlabel('batch')
+    plt.ylabel('loss')
+    plt.savefig(f"{config.pltfigure_pos}/{config.data_name}-train-test-epoch.png")
+    plt.show()
+    plt.close()
+    # Per batch
+    plt.figure(figsize=(10, 5))
+    plt.plot(train_model.batch_end_loss[:len(test_model.batch_end_loss)], color='red', label='train')
+    plt.plot(test_model.batch_end_loss, color='blue', label='test')
+    plt.legend(loc='upper left')
+    plt.title('Comparison of test & train (Per batch)')
+    plt.xlabel('batch')
+    plt.ylabel('loss')
+    plt.savefig(f"{config.pltfigure_pos}/{config.data_name}-train-test-batch.png")
+    plt.show()
+    plt.close()
+    print("\tComparison visualized...")
     print("\tModel visualized...")
 
-    ## Trainning Result ##
+
+    ## Training Result ##
     print("==> Train Result:")
-    model.trainning_output()
-    print("\tTrain result output....")
+    train_model.trainning_output()
+    test_model.trainning_output()
+    print("\tTraining result output....")
 
     """ Text Generating
     Make prediction by using text generating function
@@ -120,7 +155,7 @@ def main():
     """
     text = "Did you hear that ?"
     tokenizer = BPE_tokenizer
-    text_generator = TextGenerationPipeline(model.model, tokenizer)
+    text_generator = TextGenerationPipeline(train_model.model, tokenizer)
     print (f'''Result: 
         {text_generator(
             text_inputs=text,

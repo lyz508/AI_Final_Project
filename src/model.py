@@ -1,4 +1,5 @@
 import os
+from attr import has
 import tensorflow as tf
 from transformers import GPT2Config, TFGPT2LMHeadModel
 from src.config import ProjectConfig
@@ -6,7 +7,7 @@ import matplotlib.pyplot as plt
 from src.tokenization import tokenization
 
 class TextModel():
-    def __init__(self, config: ProjectConfig, tokenizer: tokenization):
+    def __init__(self, config: ProjectConfig, tokenizer: tokenization, **kwargs):
         """ Initialize the model
         1. Initialize the model & variables
         2. Define
@@ -44,6 +45,9 @@ class TextModel():
             loss=[self.loss, *[None] * self.model.config.n_layer], 
             metrics=[self.metric]
         )
+        # Accept rest arguments
+        self.__dict__.update(kwargs)
+
 
     def train(self, dataset: tf.data.Dataset):
         """ Train model & Save it to the path
@@ -99,10 +103,14 @@ class TextModel():
         3. Visualize the loss
         """
         # Per epoch
+        line_name = 'train'
+        if hasattr(self, 'model_name'):
+            line_name = self.model_name
+
         plt.figure(figsize=(10, 5))
         plt.plot(self.history.history['loss'])
-        plt.legend(['train'], loc='upper left')
-        plt.title('Loss (Per epoch)')
+        plt.legend([line_name], loc='upper left')
+        plt.title(f'Loss (Per epoch) -- {line_name}')
         plt.xlabel('epoch')
         plt.ylabel('loss')
         plt.savefig(f"{self.config.pltfigure_pos}/{self.config.data_name}-{self.config.epoch_times}-epoch.png")
@@ -112,8 +120,8 @@ class TextModel():
         # Per batch
         plt.figure(figsize=(10, 5))
         plt.plot(self.batch_end_loss)
-        plt.legend(['train'], loc='upper left')
-        plt.title('Loss (Per batch)')
+        plt.legend([line_name], loc='upper left')
+        plt.title(f'Loss (Per batch) -- {line_name}')
         plt.xlabel('batch')
         plt.ylabel('loss')
         plt.savefig(f"{self.config.pltfigure_pos}/{self.config.data_name}-{self.config.epoch_times}-batch.png")
@@ -130,6 +138,8 @@ class TextModel():
         # Local variable
         per_epoch_loss = self.history.history['loss']
         # GPT model config
+        if hasattr(self, 'model_name'):
+            print(f"#### {self.model_name}  ####")
         print(f"## GPT Mode Config     ##")
         print(f"{self.model.config}")
         # Per Epoch and loss

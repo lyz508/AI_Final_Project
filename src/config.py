@@ -7,7 +7,9 @@ class ProjectConfig:
         self.buffer_size = buffer_size
         self.data_name = data_name
         self.token_pos = f"tokenized_data/{data_name}"
+        self.test_token_pos = f"tokenized_data/{data_name}-test"
         self.train_pos = f"trained_data/{data_name}/train.txt"
+        self.test_pos = f"trained_data/{data_name}/test.txt"
         self.model_pos = f"trained_model/models/{data_name}"
         self.tfboard_pos = f"trained_model/logs/{data_name}"
         self.pltfigure_pos= f"trained_model/figure/{data_name}"
