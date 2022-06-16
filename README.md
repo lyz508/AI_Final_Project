@@ -155,7 +155,7 @@
 ## Performance
 - Comparison the performence with other project, which is also training the GPT2 model
 ![baseline_comparison](media/baseline_comparison.png)
-- The way to retrive the baseline parameter is described in the [baseline](tree/baseline) branch
+- The way to retrive the baseline parameter is described in the [baseline](./tree/baseline) branch
 
 
 ## Different Normalizer
