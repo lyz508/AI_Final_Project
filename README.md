@@ -1,5 +1,5 @@
 # Baseline
-- This program is modified by [mymuise/gpt2-quickly](https://github.com/mymusise/gpt2-quickly)
+- This program is modified from [mymuise/gpt2-quickly](https://github.com/mymusise/gpt2-quickly)
 
 ## Comparison
 - Modified the loss function and training procedure
