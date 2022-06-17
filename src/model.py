@@ -96,6 +96,7 @@ class TextModel():
         )
         return self.model
 
+
     def visualize(self):
         """ Visualize 
         1. Using stored history to visualize trainning history

@@ -16,8 +16,7 @@ class tokenization(object):
         # It may seen same words in different forms as equal
         self.tokenizer.normalizer = Sequence([
             # Normalization Form Compatibility Composition
-            NFKC(),
-            Lowercase()
+            NFKC()
         ])
         self.tokenizer.pre_tokenizer = ByteLevel()
         self.tokenizer.decoder = ByteLevelDecoder()
@@ -27,7 +26,6 @@ class tokenization(object):
         # Add special tokens 
         trainer = BpeTrainer(vocab_size=50000,
             show_progress=True,
-            inital_alphabet=ByteLevel.alphabet(),
             special_tokens=[
                 "<s>",
                 "<pad>",

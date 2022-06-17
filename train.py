@@ -20,7 +20,7 @@ config = ProjectConfig(
     batch_size=12,
     buffer_size=1000,
     data_name="simplebooks-2",
-    epoch_times=1
+    epoch_times=50
 )
 gpt_config : GPT2Config
 # Set seed for static behavior
@@ -136,8 +136,8 @@ def main():
 
     ## Train Model      ##
     print("==> Trainning Model:")
-    train_model.train(dataset=train_dataset)
     test_model.train(dataset=test_dataset)
+    train_model.train(dataset=train_dataset)
     print("\tModel trained...")
 
     ## Visualized       ##
@@ -162,19 +162,23 @@ def main():
     Make prediction by using text generating function
     -> This blank is for test
     """
-    text = "Did you hear that ?"
-    tokenizer = BPE_tokenizer
-    text_generator = TextGenerationPipeline(train_model.model, tokenizer)
-    print (f'''Result: 
-        {text_generator(
-            text_inputs=text,
-            max_length=128,
-            do_sample=True,
-            top_k=10,
-            eos_token_id=tokenizer.get_vocab().get("</s>", 0)
-        )[0]['generated_text']}
-        '''
-    )
+    while True:
+        try:
+            text = input("Input: ")
+            tokenizer = BPE_tokenizer
+            text_generator = TextGenerationPipeline(train_model.model, tokenizer)
+            print (f'''Result: 
+                {text_generator(
+                    text_inputs=text,
+                    max_length=128,
+                    do_sample=True,
+                    top_k=10,
+                    eos_token_id=tokenizer.get_vocab().get("</s>", 0)
+                )[0]['generated_text']}
+                '''
+            )
+        except KeyboardInterrupt:
+            exit(0)
 
 
 if __name__ == "__main__":

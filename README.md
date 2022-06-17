@@ -143,6 +143,10 @@
 - This visualization result will be stored in `trained_model/figure/`
 - Detail log output can be found in `media/detail_output.md`
 
+### Text Generation
+
+![](media/result.png)
+
 ### Loss Value Per Epoch
 
 <img src="media/samplebooks2-50-epoch.png" alt="loss per epoch" style="zoom:80%;" />

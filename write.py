@@ -1,5 +1,6 @@
 import argparse
 from transformers import TFGPT2LMHeadModel, TextGenerationPipeline
+import tensorflow as tf
 from train import load_tokenizer
 from train import config
 
@@ -11,7 +12,7 @@ def param_parser():
         - max_len: output length
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--dir', default=f"{config.model_pos}-30")
+    parser.add_argument('-d', '--dir', default=f"{config.model_pos}-50")
     # parser.add_argument('-h', '--help', default=False)
     parser.add_argument('-max', '--max_len', default=128)
     args = parser.parse_args()
@@ -26,8 +27,10 @@ def main():
     4. Accept input string
     5. Generate Text
     """
+    tf.random.set_seed(42)
+
     # Variables
-    model_path = f"{config.model_pos}-30"
+    model_path = f"{config.model_pos}-50"
     max_len = 128
 
     # Prompt
@@ -47,7 +50,7 @@ def main():
     # Load Model & Tokenizer 
     print("==> Loading Model & Tokenizer:")
     try:
-        tokenizer = load_tokenizer()
+        tokenizer = load_tokenizer("train")
         print("\tTokenizer Loaded...")
         model = TFGPT2LMHeadModel.from_pretrained(model_path)
     except OSError:

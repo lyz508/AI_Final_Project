@@ -6,7 +6,7 @@ class ProjectConfig:
         self.batch_size = batch_size
         self.buffer_size = buffer_size
         self.data_name = data_name
-        self.token_pos = f"tokenized_data/{data_name}"
+        self.token_pos = f"tokenized_data/{data_name}-train"
         self.test_token_pos = f"tokenized_data/{data_name}-test"
         self.train_pos = f"trained_data/{data_name}/train.txt"
         self.test_pos = f"trained_data/{data_name}/test.txt"
