@@ -1,10 +1,10 @@
 # Writing with AI
 
-## Proposal
+## Purpose
 
 - NYCU 2022 spring AI Final Project
 
-- The main proposal is to use the GPT-2 model trained & generating text
+- The main purpose is to use the GPT-2 model trained & generating text
 
 ## Requirement
 
