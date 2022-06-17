@@ -156,7 +156,7 @@ transformers: 4.19.4
 
 ### Text Generation
 
-![](media/result.png)
+![](media/Result.png)
 
 ### Loss Value Per Epoch
 
