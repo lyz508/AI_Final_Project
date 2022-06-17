@@ -6,6 +6,17 @@
 
 - The main proposal is to use the GPT-2 model trained & generating text
 
+## Requirement
+
+```
+attr: 0.3.1
+attrs: 21.4.0
+matplotlib: 3.5.1
+tensorflow: 2.9.1
+tokenizers: 0.12.1
+transformers: 4.19.4
+```
+
 ## Simple Use
 
 - Download the release.
